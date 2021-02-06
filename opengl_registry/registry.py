@@ -29,10 +29,13 @@ class Registry:
             groups (List[Group]): List of groups
         """
         self._types = types or []
-        self._enums: Dict[str, Enum] = enums or [],
-        self._commands: Dict[str, Command] = commands or []
+        self._enums: Dict[str, Enum] = enums or {}
+        self._commands: Dict[str, Command] = commands or {}
         self._features = features or []
         self._extensions = extensions or []
+
+    def __repr__(self) -> str:
+        return f"<Registry: enums={len(self._enums)}, commands={len(self._commands)}>"
 
     @property
     def enums(self) -> Dict[str, Enum]:
@@ -55,10 +58,35 @@ class Registry:
         """List[Type]: List of all types"""
         return self._types
 
+    def get_enum(self, name: str):
+        return self._enums.get(name)
+
+    def add_enum(self, enum: Enum):
+        self._enums[enum.name] = enum
+
+    def remove_enum(self, name: str) -> bool:
+        if name in self._enums:
+            del self._enums[name]
+            return True
+        return False
+
+    def get_command(self, name: str):
+        return self._commands.get(name)
+
+    def add_command(self, command: Command):
+        self._commands[command.name] = command
+
+    def remove_command(self, name: str) -> bool:
+        if name in self._commands:
+            del self._commands[name]
+            return True
+        return False
+
     def get_profile(
         self, api: str = "gl", profile: str = "core", version: str = "3.3", extensions=None
-    ):
+    ) -> "Registry":
         """Get a subset of the registry"""
+        # Create the new registry
         registry = Registry(
             types=self._types,
         )
@@ -68,9 +96,34 @@ class Registry:
             if feature.api != api:
                 continue
 
-            print(feature)
-            # for require in feature.require:
-            #     print("require", require)
-            
-            for remove in feature.remove:
-                print("remove", remove)
+            if feature.number > version:
+                continue
+
+            # Add the required
+            for details in feature.require:
+                for name in details.enums:
+                    enum = self.get_enum(name)
+                    if enum:
+                        registry.add_enum(enum)
+                    else:
+                        raise ValueError("Cannot add enum", name)
+
+                for name in details.commands:
+                    command = self.get_command(name)
+                    if command:
+                        registry.add_command(command)
+                    else:
+                        raise ValueError("Cannot add command", name)                        
+
+            # Remove features
+            if profile == "core":
+                for details in feature.remove:
+                    for name in details.enums:
+                        if not registry.remove_enum(name):
+                            raise ValueError("Cannot remove enum", name)
+
+                    for name in details.commands:
+                        if not registry.remove_command(name):
+                            raise ValueError("Cannot remove command", name)
+
+        return registry
