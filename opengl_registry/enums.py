@@ -53,6 +53,10 @@ class Enums:
         """Group: The group this enum range belongs to"""
         return self._group
 
+    @group.setter
+    def group(self, value: Group):
+        self._group = value
+
     @property
     def type(self) -> str:
         """str: Enum type"""
@@ -74,15 +78,11 @@ class Enums:
         return self._vendor
 
     @property
-    def group_name(self) -> str:
+    def group_name(self) -> Optional[str]:
         return self._group_name
 
-    @group.setter
-    def group(self, value: Group):
-        self._group = value
-
     @property
-    def comment(self) -> str:
+    def comment(self) -> Optional[str]:
         """str: Enum range comment from the spec"""
         return self._comment
 
@@ -111,6 +111,7 @@ class Enum:
         """
         self._name = name
         self._value = value
+        self._alias = alias
         self._comment = comment
         self._range = None
 

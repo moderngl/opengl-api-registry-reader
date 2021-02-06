@@ -171,7 +171,7 @@ class RegistryReader:
 
         return enums
 
-    def read_commands(self) -> List[Command]:
+    def read_commands(self) -> Commands:
         """Reads all commands.
 
         Returns:
@@ -234,7 +234,7 @@ class RegistryReader:
                 name=feature_elem.get("name"),
                 number=feature_elem.get("number"),
             )
-            features.append(Feature)
+            features.append(feature)
             for details_elem in (
                 *feature_elem.iter("require"),
                 *feature_elem.iter("remove"),
@@ -251,7 +251,7 @@ class RegistryReader:
                 if mode == FeatureDetails.REQUIRE:
                     feature.require.append(details)
                 elif mode == FeatureDetails.REMOVE:
-                    feature.require.append(details)
+                    feature.remove.append(details)
                 else:
                     logger.warning("Unsupported mode: '%s'", mode)
 
