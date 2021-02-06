@@ -73,7 +73,7 @@ class Command:
         self._name = value
 
     @property
-    def params(self) -> str:
+    def params(self) -> List[CommandParam]:
         return self._params
 
     @property
@@ -89,20 +89,3 @@ class Command:
 
     def __str__(self):
         return "<Command {} {}".format(self._name, [p.name for p in self._params])
-
-
-class Commands:
-    """A group of commands"""
-
-    def __init__(self, namespace="GL", entires=None):
-        self._namespace = namespace
-        self._entries = entires or []
-
-    @property
-    def namespace(self) -> str:
-        return self._namespace
-
-    @property
-    def entries(self) -> List[Command]:
-        """List[Command]: all commands"""
-        return self._entries

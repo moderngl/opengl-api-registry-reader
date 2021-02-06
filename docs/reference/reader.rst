@@ -16,7 +16,6 @@ Methods
 
 .. automethod:: RegistryReader.read
 .. automethod:: RegistryReader.read_types
-.. automethod:: RegistryReader.read_groups
 .. automethod:: RegistryReader.read_enums
 .. automethod:: RegistryReader.read_commands
 .. automethod:: RegistryReader.read_features
@@ -27,7 +26,5 @@ Attributes
 
 .. autoattribute:: RegistryReader.DEFAULT_URL
 .. autoattribute:: RegistryReader.registry_cls
-.. autoattribute:: RegistryReader.group_cls
-.. autoattribute:: RegistryReader.enums_cls
 .. autoattribute:: RegistryReader.enum_cls
 .. autoattribute:: RegistryReader.type_cls

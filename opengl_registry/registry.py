@@ -1,9 +1,8 @@
-from typing import List
+from typing import Dict, List, NoReturn
 import logging
 
 from opengl_registry.gltype import GlType
-from opengl_registry.group import Group
-from opengl_registry.enums import Enums
+from opengl_registry.enums import Enum
 from opengl_registry.commands import Command
 from opengl_registry.features import Feature
 from opengl_registry.extensions import Extension
@@ -17,12 +16,11 @@ class Registry:
     def __init__(
         self,
         *,
-        types: List[GlType],
-        groups: List[Group],
-        enums: List[Enums],
-        commands: List[Command],
-        features: List[Feature],
-        extensions: List[Extension]
+        types: List[GlType] = None,
+        enums: Dict[str, Enum] = None,
+        commands: Dict[str, Command] = None,
+        features: List[Feature] = None,
+        extensions: List[Extension]  = None,
     ):
         """Initialize the registry.
 
@@ -30,24 +28,18 @@ class Registry:
             types (List[Type]): List of types
             groups (List[Group]): List of groups
         """
-        self._groups = {grp.name: grp for grp in groups} if groups else dict()
-        self._types = types
-        self._enums = enums
-        self._commands = commands
-        self._features = features
-        self._extensions = extensions
+        self._types = types or []
+        self._enums: Dict[str, Enum] = enums or [],
+        self._commands: Dict[str, Command] = commands or []
+        self._features = features or []
+        self._extensions = extensions or []
 
     @property
-    def groups(self) -> dict:
-        """dict: Dictionary for all groups with group name as key"""
-        return self._groups
-
-    @property
-    def enums(self) -> List[Enums]:
+    def enums(self) -> Dict[str, Enum]:
         return self._enums
 
     @property
-    def commands(self) -> List[Command]:
+    def commands(self) -> Dict[str, Command]:
         return self._commands
 
     @property
@@ -63,9 +55,22 @@ class Registry:
         """List[Type]: List of all types"""
         return self._types
 
-    # TODO: Finalize this method
     def get_profile(
-        api: str = "gl", profile: str = "core", version: str = "3.3", extensions=None
+        self, api: str = "gl", profile: str = "core", version: str = "3.3", extensions=None
     ):
-        """"""
-        raise NotImplementedError()
+        """Get a subset of the registry"""
+        registry = Registry(
+            types=self._types,
+        )
+
+        for feature in self._features:
+            # Skip features not belonging to the api
+            if feature.api != api:
+                continue
+
+            print(feature)
+            # for require in feature.require:
+            #     print("require", require)
+            
+            for remove in feature.remove:
+                print("remove", remove)

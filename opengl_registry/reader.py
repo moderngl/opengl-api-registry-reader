@@ -1,15 +1,14 @@
 import logging
 from io import StringIO
-from typing import List
+from typing import Dict, List
 from xml.etree import ElementTree
 import requests
 
 # NOTE: Consider moving this to __init__ when finalized
 from opengl_registry.registry import Registry
 from opengl_registry.gltype import GlType
-from opengl_registry.enums import Enums, Enum
-from opengl_registry.group import Group
-from opengl_registry.commands import Command, CommandParam, Commands
+from opengl_registry.enums import Enum
+from opengl_registry.commands import Command, CommandParam
 from opengl_registry.features import Feature, FeatureDetails
 
 # from opengl_registry.extensions import Extension
@@ -42,12 +41,8 @@ class RegistryReader:
 
     #: The registry class. Can be replaced with a custom class
     registry_cls = Registry
-    #: The Group class. Can be replaced with a custom class
-    group_cls = Group
     #: The GlType class. Can be replaced with a custom class
     type_cls = GlType
-    #: The Enums class. Can be replaced with a custom class
-    enums_cls = Enums
     #: The Enum class. Can be replaced with a custom class
     enum_cls = Enum
 
@@ -90,7 +85,6 @@ class RegistryReader:
         """
         return self.registry_cls(
             types=self.read_types(),
-            groups=self.read_groups(),
             enums=self.read_enums(),
             commands=self.read_commands(),
             features=self.read_features(),
@@ -123,69 +117,55 @@ class RegistryReader:
 
         return types
 
-    def read_groups(self) -> List[Group]:
-        """Reads all group nodes.
+    ## Note: Khronos does not use the enum group information. Likely outdated.
+    # def read_groups(self) -> List[Group]:
+    #     """Reads all group nodes.
 
-        Returns:
-            List[Group]: list of groups
-        """
-        groups = []
+    #     Returns:
+    #         List[Group]: list of groups
+    #     """
+    #     groups = []
 
-        for groups_elem in self._tree.getroot().iter("group"):
-            groups.append(
-                self.group_cls(
-                    groups_elem.attrib["name"],
-                    entries={e.attrib["name"] for e in groups_elem.iter("enum")},
-                )
-            )
+    #     for groups_elem in self._tree.getroot().iter("group"):
+    #         groups.append(
+    #             self.group_cls(
+    #                 groups_elem.attrib["name"],
+    #                 entries={e.attrib["name"] for e in groups_elem.iter("enum")},
+    #             )
+    #         )
 
-        return groups
+    #     return groups
 
-    def read_enums(self) -> List[Enums]:
+    def read_enums(self) -> Dict[str, Enum]:
         """Reads all enums groups.
 
         Returns:
             List[Enums]: list of enums groups
         """
-        enums = []
+        enums = {}
         for enums_elem in self._tree.getroot().iter("enums"):
-            enums_instance = self.enums_cls(
-                namespace=enums_elem.get("namespace"),
-                group_name=enums_elem.get("group"),
-                type=enums_elem.get("type"),
-                comment=enums_elem.get("comment"),
-                vendor=enums_elem.get("vendor"),
-                start=enums_elem.get("start"),
-                end=enums_elem.get("end"),
-                entries=[
-                    Enum(
-                        name=el.get("name"),
-                        value=el.get("value"),
-                        comment=el.get("comment"),
-                        alias=el.get("alias"),
-                    )
-                    for el in enums_elem.iter("enum")
-                ],
-            )
-            enums.append(enums_instance)
+            enums.update({
+                el.get("name"): Enum(
+                    name=el.get("name"),
+                    value=el.get("value"),
+                    comment=el.get("comment"),
+                    alias=el.get("alias"),
+                )
+                for el in enums_elem.iter("enum")
+            })
 
         return enums
 
-    def read_commands(self) -> Commands:
+    def read_commands(self) -> Dict[str, Command]:
         """Reads all commands.
 
         Returns:
             List[Command]: list of commands
         """
-        entries = []
+        entries = {}
         commands_elem = next(self._tree.getroot().iter("commands"))
-        commands = Commands(
-            namespace=commands_elem.get("namespace"),
-            entires=entries,
-        )
         for comm_elem in commands_elem.iter("command"):
             command = Command()
-            entries.append(command)
 
             for child in comm_elem:
                 # A command should only have one proto tag
@@ -219,7 +199,9 @@ class RegistryReader:
                         "comment": child.get("comment"),
                     }
 
-        return commands
+                entries[command.name] = command
+
+        return entries
 
     def read_features(self) -> List[Feature]:
         """Reads all features.
