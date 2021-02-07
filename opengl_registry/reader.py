@@ -1,5 +1,6 @@
 import logging
 from io import StringIO
+from opengl_registry.extensions import Extension
 from typing import Dict, List
 from xml.etree import ElementTree
 import requests
@@ -244,10 +245,21 @@ class RegistryReader:
 
         return features
 
-    def read_extensions(self):
+    def read_extensions(self) -> Dict[str, Extension]:
         """Reads all extensions.
 
         Returns:
             List[Extension]: list of extensions
         """
-        return []
+        extensions = {}
+        # NOTE: Extensions done have <remove>. We can safely iter
+        for ext_elem in self._tree.iter("extension"):
+            name = ext_elem.get("name")
+            extensions[name] = Extension(
+                name=name,
+                supported=ext_elem.get("supported"),
+                enums=[e.get("name") for e in ext_elem.iter("enum")],
+                commands=[e.get("name") for e in ext_elem.iter("command")],
+            )
+
+        return extensions

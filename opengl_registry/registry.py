@@ -20,7 +20,7 @@ class Registry:
         enums: Dict[str, Enum] = None,
         commands: Dict[str, Command] = None,
         features: List[Feature] = None,
-        extensions: List[Extension]  = None,
+        extensions: Dict[str, Extension]  = None,
     ):
         """Initialize the registry.
 
@@ -32,10 +32,10 @@ class Registry:
         self._enums: Dict[str, Enum] = enums or {}
         self._commands: Dict[str, Command] = commands or {}
         self._features = features or []
-        self._extensions = extensions or []
+        self._extensions: Dict[str, Extension] = extensions or {}
 
     def __repr__(self) -> str:
-        return f"<Registry: enums={len(self._enums)}, commands={len(self._commands)}>"
+        return f"<Registry: enums={len(self._enums)}, commands={len(self._commands)} extensions={len(self._extensions)}>"
 
     @property
     def enums(self) -> Dict[str, Enum]:
@@ -82,8 +82,15 @@ class Registry:
             return True
         return False
 
+    def get_extension(self, name) -> Extension:
+        """Get an extension by name"""
+        if not name.startswith("GL_"):
+            name = f"GL_{name}"
+
+        return self._extensions[name]
+
     def get_profile(
-        self, api: str = "gl", profile: str = "core", version: str = "3.3", extensions=None
+        self, api: str = "gl", profile: str = "core", version: str = "3.3", extensions=List[str],
     ) -> "Registry":
         """Get a subset of the registry"""
         # Create the new registry
@@ -126,5 +133,13 @@ class Registry:
                     for name in details.commands:
                         if not registry.remove_command(name):
                             raise ValueError("Cannot remove command", name)
+
+        # Add extensions
+        for ext_name in extensions:
+            ext = self.get_extension(ext_name)
+            for name in ext.enums:
+                registry.add_enum(self.get_enum(name))
+            for name in ext.commands:
+                registry.add_command(self.get_enum(name))
 
         return registry

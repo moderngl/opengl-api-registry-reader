@@ -2,9 +2,6 @@
 
 # opengl-registry
 
-**NOTE: The repository is currently a work-in-progress. This warning
-will be removed once the first stable version is released on PyPI**
-
 * [opengl-registry Documentation](https://opengl-registry.readthedocs.io)
 * [opengl-registry on PyPI](https://pypi.org/project/opengl-registry)
 * [opengl-registry on Github](https://github.com/moderngl/opengl-registry)

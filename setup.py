@@ -2,14 +2,14 @@ from setuptools import setup, find_namespace_packages
 
 setup(
     name="opengl-registry",
-    version="0.2.0",
+    version="0.3.0",
     description="A simple tool for extracting information from the OpenGL API Registry",
     long_description=open('README.md').read(),
     long_description_content_type='text/markdown',
     url="https://github.com/moderngl/opengl-registry",
     author="Einar Forselv",
     author_email="eforselv@gmail.com",
-    python_requires='>=3.5',
+    python_requires='>=3.6',
     platforms=['any'],
     license='MIT',
     packages=find_namespace_packages(include=['opengl_registry']),
@@ -26,9 +26,6 @@ setup(
         'Topic :: Multimedia :: Graphics',
         'Topic :: Multimedia :: Graphics :: 3D Rendering',
         'Programming Language :: Python :: 3 :: Only',
-        'Programming Language :: Python :: 3.5',
-        'Programming Language :: Python :: 3.6',
-        'Programming Language :: Python :: 3.7',
     ],
     entry_points={
         'console_scripts': [
