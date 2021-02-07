@@ -171,6 +171,11 @@ class RegistryReader:
                 # A command should only have one proto tag
                 if child.tag == "proto":
                     command.proto = "".join(child.itertext())
+                    try:
+                        ptype = next(child.iter("ptype"))
+                        command.ptype = ptype.text
+                    except StopIteration:
+                        pass
                     command.name = next(child.iter("name")).text
                 elif child.tag == "param":
                     name = next(child.iter("name")).text

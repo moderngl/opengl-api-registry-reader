@@ -22,7 +22,7 @@ class CommandParam:
     @property
     def value(self) -> str:
         """str: full declaration string"""
-        return self._name
+        return self._value
 
     @property
     def ptype(self) -> str:
