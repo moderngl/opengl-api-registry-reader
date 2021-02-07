@@ -50,19 +50,32 @@ class CommandParam:
 class Command:
     """GL functions"""
 
-    def __init__(self, proto=None, name=None, params=None, glx=None):
+    def __init__(self, proto=None, ptype = None, name=None, params=None, glx=None):
         self._proto = proto
+        self._ptype = ptype
         self._name = name
         self._params = params or []
         self._glx = glx
+        self._requires = None  # required gl version
+
+    def __lt__(self, other):
+        return self.name < other.name
 
     @property
     def proto(self) -> str:
-        return self._name
+        return self._proto
 
     @proto.setter
     def proto(self, value):
-        self._name = value
+        self._proto = value
+
+    @property
+    def ptype(self) -> str:
+        return self._ptype
+
+    @ptype.setter
+    def ptype(self, value):
+        self._ptype = value
 
     @property
     def name(self) -> str:
@@ -83,6 +96,14 @@ class Command:
     @glx.setter
     def glx(self, value):
         self._glx = value
+
+    @property
+    def requires(self) -> str:
+        return self._requires
+    
+    @requires.setter
+    def requires(self, value: str):
+        self._requires = value
 
     def __repr__(self):
         return str(self)

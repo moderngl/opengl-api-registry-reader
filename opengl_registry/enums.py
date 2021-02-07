@@ -38,6 +38,9 @@ class Enum:
         """int: Enum value as as int"""
         return int(self._value, base=16)
 
+    def __lt__(self, other):
+        return self.value_int < other.value_int
+
     def __str__(self) -> str:
         return "<Enum {} [{}]>".format(self._name, self._value)
 

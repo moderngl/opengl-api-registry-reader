@@ -110,6 +110,7 @@ class Registry:
 
                 for name in details.commands:
                     command = self.get_command(name)
+                    command.requires = feature.number
                     if command:
                         registry.add_command(command)
                     else:
