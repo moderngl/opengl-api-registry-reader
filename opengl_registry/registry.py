@@ -140,6 +140,6 @@ class Registry:
             for name in ext.enums:
                 registry.add_enum(self.get_enum(name))
             for name in ext.commands:
-                registry.add_command(self.get_enum(name))
+                registry.add_command(self.get_command(name))
 
         return registry
