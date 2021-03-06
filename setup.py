@@ -2,7 +2,7 @@ from setuptools import setup, find_namespace_packages
 
 setup(
     name="opengl-registry",
-    version="0.3.0",
+    version="0.3.1",
     description="A simple tool for extracting information from the OpenGL API Registry",
     long_description=open('README.md').read(),
     long_description_content_type='text/markdown',
